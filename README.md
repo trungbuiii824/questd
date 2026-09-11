@@ -1,8 +1,8 @@
-# 🚀 Discord Quest Auto-Completer v4.0 PRO
+# 🚀 Discord Quest Service Bot v4.0 PRO
 
-Công cụ tự động hóa hoàn thành toàn bộ nhiệm vụ (**Discord Quests**) cho tài khoản Discord một cách an toàn, nhanh chóng và mượt mà. 
+Bot Discord tự động hóa làm nhiệm vụ (**Discord Quests**) cho toàn bộ thành viên trong máy chủ (Server) một cách thông minh, an toàn và riêng tư. 
 
-Hỗ trợ chạy dưới dạng **Discord Service Bot** (thành viên server tự bấm nút nhập token trong giao diện riêng tư, không ai nhìn thấy), tích hợp **Giao diện Desktop GUI** và hỗ trợ **Deploy lên Railway 24/7 miễn phí**!
+Thành viên tự bấm nút nhập token trong giao diện riêng tư (Modal Popup - 100% Ephemeral), bot tự động cày quest và cập nhật tiến độ trực tiếp. Hỗ trợ **Deploy lên Railway chạy 24/7** hoặc chạy trên máy tính với **Giao diện Desktop GUI**.
 
 ---
 
@@ -12,7 +12,7 @@ Hỗ trợ chạy dưới dạng **Discord Service Bot** (thành viên server t�
   - Bảng điều khiển Embed sang trọng, ghim cố định trong kênh server.
   - Tích hợp các nút bấm tương tác: `[ 🚀 Bắt Đầu Cày Quest ]`, `[ 📋 Kiểm Tra Nhiệm Vụ ]`, `[ 📖 Hướng Dẫn Lấy Token ]`.
   - **Bảo mật tuyệt đối (100% Ephemeral)**: Khi bấm nút, hộp thoại Popup Modal hiện lên để nhập token riêng tư. Tiến trình cày chỉ hiển thị cho riêng người dùng đó, không ai khác trong server nhìn thấy.
-  - Kèm video YouTube hướng dẫn lấy token 1-click.
+  - Tích hợp nút mở video YouTube hướng dẫn lấy token 1-click.
 - ☁️ **Sẵn Sàng Deploy Lên Railway 24/7**:
   - Tích hợp sẵn `Procfile` và `railway.json`.
   - Chỉ cần kết nối GitHub với Railway và thêm biến `DISCORD_BOT_TOKEN`, bot sẽ tự chạy ngầm 24/7 không cần treo máy tính cá nhân.
@@ -44,22 +44,17 @@ autoquest/
 │   │   └── models.py            # Trích xuất dữ liệu, trạng thái và tiến độ quest
 │   ├── utils/
 │   │   ├── build_number.py      # Tự động lấy Discord Client Build Number mới nhất
-│   │   ├── logger.py            # Hệ thống log màu Terminal & file
-│   │   ├── notifier.py          # Gửi thông báo Webhook Discord
-│   │   └── token_loader.py      # Tải token từ file hoặc dòng lệnh
+│   │   └── logger.py            # Hệ thống log màu Terminal & file
 │   └── worker/
 │       └── quest_worker.py      # Bộ điều phối cày video, stream heartbeat, nhận quà
 ├── bot.py                       # Điểm khởi chạy Discord Bot Service (/panel)
 ├── gui.py                       # Giao diện điều khiển Desktop GUI cho Windows
-├── main.py                      # Chế độ chạy dòng lệnh truyền thống (CLI)
 ├── config.example.json          # File cấu hình mẫu
-├── tokens.example.txt           # File danh sách token mẫu
 ├── requirements.txt             # Thư viện Python cần thiết
 ├── Procfile                     # Cấu hình tiến trình Worker cho Railway / Heroku
 ├── railway.json                 # Cấu hình tự động triển khai trên Railway
 ├── run_bot.bat                  # Khởi chạy Bot trên Windows (1-click)
 ├── start_gui.bat                # Mở Giao diện GUI trên Windows (1-click)
-├── run.bat                      # Chạy CLI trên Windows (1-click)
 ├── install.bat                  # Tự cài đặt thư viện trên Windows (1-click)
 ├── .gitignore                   # Loại trừ file bảo mật (token, log, config cá nhân)
 └── README.md                    # Tài liệu hướng dẫn
@@ -96,7 +91,7 @@ autoquest/
 3. Dán **Bot Token** vào ô cấu hình -> Bấm **Lưu Cấu Hình**.
 4. Bấm **▶ Khởi Động Bot**.
 
-### Cách 2: Sử dụng Bot qua dòng lệnh
+### Cách 2: Sử dụng Bot qua cửa sổ dòng lệnh
 1. Điền token vào `config.json` (tạo từ `config.example.json`):
    ```json
    {
@@ -104,10 +99,6 @@ autoquest/
    }
    ```
 2. Nhấp đúp vào **`run_bot.bat`** (hoặc gõ `python bot.py`).
-
-### Cách 3: Chế độ CLI truyền thống (Cày bằng file tokens.txt)
-1. Dán các Discord User Token vào file `tokens.txt` (mỗi dòng 1 token).
-2. Nhấp đúp vào **`run.bat`** (hoặc gõ `python main.py`).
 
 ---
 
@@ -127,7 +118,7 @@ autoquest/
 
 - **Không bao giờ lộ Token:** Toàn bộ tương tác nhập token và thông báo tiến độ đều dùng cờ `ephemeral=True` trong Discord API, chỉ người gửi mới nhìn thấy.
 - **Không lưu Token người dùng:** Token chỉ tồn tại trong bộ nhớ RAM tạm thời trong phiên cày và tự động hủy ngay sau khi hoàn thành.
-- **Git Protection:** File `config.json`, `tokens.txt`, và thư mục `logs/` đã được cấu hình trong `.gitignore` để đảm bảo không bao giờ bị lộ khi push lên GitHub.
+- **Git Protection:** File `config.json` và thư mục `logs/` đã được cấu hình trong `.gitignore` để đảm bảo không bao giờ bị lộ khi push lên GitHub.
 
 ---
 

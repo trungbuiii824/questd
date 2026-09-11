@@ -3,9 +3,8 @@ chcp 65001 >nul
 set PYTHONUTF8=1
 title Discord Quest Auto-Completer - Cài đặt Thư Viện
 
-
 echo ======================================================================
-echo    CÀI ĐẶT THƯ VIỆN CHO DISCORD QUEST AUTO-COMPLETER v4.0 PRO
+echo    CÀI ĐẶT THƯ VIỆN CHO DISCORD QUEST BOT v4.0 PRO
 echo ======================================================================
 echo.
 
@@ -41,19 +40,12 @@ if not exist "config.json" (
     )
 )
 
-:: Khởi tạo file tokens.txt nếu chưa có
-if not exist "tokens.txt" (
-    echo [*] Đang tạo file tokens.txt...
-    echo # Dán Discord Token của bạn vào đây (mỗi dòng 1 token) > tokens.txt
-)
-
 echo.
 echo ======================================================================
 echo [THÀNH CÔNG] Đã cài đặt xong toàn bộ thư viện cần thiết!
 echo Bây giờ bạn có thể:
-echo   1. Mở file tokens.txt và dán Discord Token của bạn vào đó.
-echo   2. Mở file config.json để tùy chỉnh Webhook, thời gian quét...
-echo   3. Nhấp đúp vào run.bat để chạy CLI, hoặc run_bot.bat để chạy Discord Bot!
+echo   - Nhấp đúp vào start_gui.bat để mở Giao diện Desktop điều khiển bot.
+echo   - Hoặc nhấp đúp vào run_bot.bat để chạy Bot trực tiếp qua cửa sổ lệnh.
 echo ======================================================================
 echo.
 pause
