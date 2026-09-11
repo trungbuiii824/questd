@@ -411,11 +411,15 @@ async def prefix_panel(ctx):
 
 
 def main():
-    bot_token = config.bot_token
+    bot_token = (
+        os.getenv("DISCORD_BOT_TOKEN", "").strip()
+        or os.getenv("BOT_TOKEN", "").strip()
+        or config.bot_token.strip()
+    )
     if not bot_token or bot_token == "YOUR_DISCORD_BOT_TOKEN_HERE":
         print()
         log("==================== THIẾU CẤU HÌNH BOT TOKEN ====================", "error")
-        log("Bạn chưa cấu hình 'bot_token' trong file config.json hoặc biến môi trường DISCORD_BOT_TOKEN!", "warn")
+        log("Bạn chưa cấu hình biến môi trường DISCORD_BOT_TOKEN hoặc BOT_TOKEN trên Railway / config.json!", "warn")
         log("==================================================================", "error")
         print()
         sys.exit(1)
