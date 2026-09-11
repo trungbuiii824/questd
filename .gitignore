@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Cài đặt môi trường ảo Python
+venv/
+env/
+.venv/
+
+# Thông tin xác thực & dữ liệu người dùng (BẢO MẬT)
+tokens.txt
+.token
+.env
+config.json
+
+# Dữ liệu quà tặng & file log
+data/rewards.txt
+logs/
+*.log
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp

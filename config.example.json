@@ -1,0 +1,12 @@
+{
+  "api_base": "https://discord.com/api/v9",
+  "poll_interval": 60,
+  "heartbeat_interval": 20,
+  "auto_accept": true,
+  "auto_claim": true,
+  "max_concurrent_quests": 5,
+  "discord_webhook_url": "https://discord.com/api/webhooks/your_webhook_id/your_webhook_token",
+  "log_to_file": true,
+  "rewards_file": "data/rewards.txt",
+  "bot_token": "YOUR_DISCORD_BOT_TOKEN_HERE"
+}
